@@ -6,6 +6,7 @@ from computers import (
     ScrapybaraUbuntu,
     LocalPlaywrightComputer,
     DockerComputer,
+    CuaMacOSComputer,
 )
 
 def acknowledge_safety_check_callback(message: str) -> bool:
@@ -27,6 +28,7 @@ def main():
             "browserbase",
             "scrapybara-browser",
             "scrapybara-ubuntu",
+            "cua-macos",
         ],
         help="Choose the computer environment to use.",
         default="local-playwright",
@@ -53,6 +55,25 @@ def main():
         help="Start the browsing session with a specific URL (only for browser environments).",
         default="https://bing.com",
     )
+    # Add cua-specific arguments
+    parser.add_argument(
+        "--display",
+        type=str,
+        help="Display resolution for VM (e.g., 1024x768)",
+        default="1024x768",
+    )
+    parser.add_argument(
+        "--memory",
+        type=str,
+        help="Memory allocation for VM (e.g., 4GB)",
+        default="4GB",
+    )
+    parser.add_argument(
+        "--cpu",
+        type=str,
+        help="CPU cores for VM",
+        default="2",
+    )
     args = parser.parse_args()
 
     computer_mapping = {
@@ -61,11 +82,21 @@ def main():
         "browserbase": BrowserbaseBrowser,
         "scrapybara-browser": ScrapybaraBrowser,
         "scrapybara-ubuntu": ScrapybaraUbuntu,
+        "cua-macos": CuaMacOSComputer,
     }
 
     ComputerClass = computer_mapping[args.computer]
 
-    with ComputerClass() as computer:
+    if args.computer == "cua-macos":
+        computer = ComputerClass(
+            display=args.display,
+            memory=args.memory,
+            cpu=args.cpu,
+        )
+    else:
+        computer = ComputerClass()
+
+    with computer:
         agent = Agent(
             computer=computer,
             acknowledge_safety_check_callback=acknowledge_safety_check_callback,
