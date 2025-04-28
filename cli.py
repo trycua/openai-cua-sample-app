@@ -44,38 +44,10 @@ def main():
         help="Start the browsing session with a specific URL (only for browser environments).",
         default="https://bing.com",
     )
-    # Add cua-specific arguments
-    parser.add_argument(
-        "--display",
-        type=str,
-        help="Display resolution for VM (e.g., 1024x768)",
-        default="1024x768",
-    )
-    parser.add_argument(
-        "--memory",
-        type=str,
-        help="Memory allocation for VM (e.g., 4GB)",
-        default="4GB",
-    )
-    parser.add_argument(
-        "--cpu",
-        type=str,
-        help="CPU cores for VM",
-        default="2",
-    )
     args = parser.parse_args()
     ComputerClass = computers_config[args.computer]
 
-    if args.computer == "cua-macos":
-        computer = ComputerClass(
-            display=args.display,
-            memory=args.memory,
-            cpu=args.cpu,
-        )
-    else:
-        computer = ComputerClass()
-
-    with computer:
+    with ComputerClass() as computer:
         agent = Agent(
             computer=computer,
             acknowledge_safety_check_callback=acknowledge_safety_check_callback,
