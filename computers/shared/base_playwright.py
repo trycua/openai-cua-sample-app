@@ -45,8 +45,11 @@ class BasePlaywrightComputer:
       - We also have extra browser actions: `goto(url)` and `back()`.
     """
 
-    environment: Literal["browser"] = "browser"
-    dimensions = (1024, 768)
+    def get_environment(self):
+        return "browser"
+
+    def get_dimensions(self):
+        return (1024, 768)
 
     def __init__(self):
         self._playwright = None

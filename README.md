@@ -82,7 +82,7 @@ python simple_cua_loop.py
 
 ## Computer Environments
 
-CUA can work with any `Computer` environment that can handle the [CUA actions](https://platform.openai.com/docs/api-reference/responses/object#responses/object-output):
+CUA can work with any `Computer` environment that can handle the [CUA actions](https://platform.openai.com/docs/api-reference/responses/object#responses/object-output) (plus a few extra):
 
 | Action                             | Example                         |
 | ---------------------------------- | ------------------------------- |
@@ -104,7 +104,6 @@ This sample app provides a set of implemented `Computer` examples, but feel free
 | `Browserbase`       | browserbase        | `browser`            | Remote browser environment        | [Browserbase](https://www.browserbase.com/) API key in `.env`    |
 | `ScrapybaraBrowser` | scrapybara-browser | `browser`            | Remote browser environment        | [Scrapybara](https://scrapybara.com/dashboard) API key in `.env` |
 | `ScrapybaraUbuntu`  | scrapybara-ubuntu  | `linux`              | Remote Ubuntu desktop environment | [Scrapybara](https://scrapybara.com/dashboard) API key in `.env` |
-| `CuaMacOSComputer`  | cua-macos          | `mac`                | macOS VM with lume virtualization | [cua-computer](https://github.com/trycua/cua/tree/main/libs/computer) package and [lume CLI](https://github.com/trycua/cua/tree/main/libs/lume) |
 
 Using the CLI, you can run the sample app with different computer environments using the options listed above:
 
@@ -118,11 +117,14 @@ For example, to run the sample app with the `Docker` computer environment, you c
 python cli.py --show --computer docker
 ```
 
-To run with the `cua-macos` computer environment:
+#### Contributed Computers
 
-```shell
-python cli.py --show --computer cua-macos
-```
+| Computer | Option | Type | Description | Requirements |
+| -------- | ------ | ---- | ----------- | ------------ |
+| `CuaMacOSComputer`  | cua-macos          | `mac`                | macOS VM with lume virtualization | [cua-computer](https://github.com/trycua/cua/tree/main/libs/computer) package and [lume CLI](https://github.com/trycua/cua/tree/main/libs/lume) |
+
+> [!NOTE]  
+> If you've implemented a new computer, please add it to the "Contributed Computers" section of the README.md file. Clearly indicate any auth / signup requirements. See the [Contributing](#contributing) section for more details.
 
 ### Docker Setup
 
@@ -197,3 +199,98 @@ However, if you pass in any `tools` that are also defined in your `Computer` met
 This repository provides example implementations with basic safety measures in place.
 
 We recommend reviewing the best practices outlined in our [guide](https://platform.openai.com/docs/guides/tools-computer-use#risks-and-safety), and making sure you understand the risks involved with using this tool.
+
+# Contributing
+
+## Computers
+
+To contribute a new computer, you'll need to implement it, test it, and submit a PR. Please follow the steps below:
+
+### 1. Implement your computer
+
+You will create or modify the following files (and only these files):
+
+| File                                        | Updates            |
+| ------------------------------------------- | ------------------ |
+| `computers/contrib/[your_computer_name].py` | Add computer file. |
+| `computers/contrib/__init__.py`             | Add to imports.    |
+| `computers/config.py`                       | Add to config.     |
+| `README.md`                                 | Add to README.     |
+
+Create a new file in `computers/contrib/[your_computer_name].py` and define your computer class. Make sure to implement the methods defined in the `Computer` class – use the existing implementations as a reference.
+
+```python
+class YourComputerName:
+    def __init__(self):
+        pass
+
+    def screenshot(self):
+        # TODO: implement
+        pass
+
+    def click(self, x, y):
+        # TODO: implement
+        pass
+
+    # ... add other methods as needed
+```
+
+> [!NOTE]  
+> For playwright-based computers, make sure to subclass `BasePlaywrightComputer` in `computers/shared/base_playwright.py` – see `computers/default/browserbase.py` for an example.
+
+Import your new computer in the `computers/contrib/__init__.py`:
+
+```python
+# ... existing computer imports
+from .your_computer_name import YourComputerName
+```
+
+And add your new computer to the `computers_config` dictionary in `computers/config.py`:
+
+```python
+# ... existing computers_config
+"your_computer_name": YourComputerName,
+```
+
+Feel free to add your new computer to the "Contributed Computers" section of the README.md file. Clearly indicate any auth / signup requirements.
+
+### 2. Test your computer
+
+Test your new computer (with the CLI). Make sure:
+
+- Basic search / navigation works.
+- Any setup / teardown is handled correctly.
+- Test e2e with a few different tasks.
+
+Potential gotchas (See `default` computers for reference):
+
+- Scrolling, dragging, and control/command keys.
+- Resource allocation and teardown.
+- Auth / signup requirements.
+
+### 3. Submit a PR
+
+Your PR should clearly define the following:
+
+- Title: `[contrib] Add computer: <your_computer_name>`
+- Description:
+
+```
+# Add computer: <your_computer_name>
+
+#### Affiliations
+
+What organization / company / institution are you affiliated with?
+
+#### Computer Description
+
+- Computer type (e.g. browser, linux)
+
+#### Testing Plan
+
+- Signup steps.
+- Auth steps.
+- Sample queries.
+```
+
+Thank you for your contribution! Please follow all of the above guidelines. Failure to do so may result in your PR being rejected.

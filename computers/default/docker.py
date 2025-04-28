@@ -4,8 +4,11 @@ import shlex
 
 
 class DockerComputer:
-    environment = "linux"
-    dimensions = (1280, 720)  # Default fallback; will be updated in __enter__.
+    def get_environment(self):
+        return "linux"
+
+    def get_dimensions(self):
+        return (1280, 720)  # Default fallback; will be updated in __enter__.
 
     def __init__(
         self,
@@ -162,5 +165,10 @@ class DockerComputer:
             f"DISPLAY={self.display} xdotool mousemove {start_x} {start_y} mousedown 1"
         )
         for point in path[1:]:
-            self._exec(f"DISPLAY={self.display} xdotool mousemove {point['x']} {point['y']}")
+            self._exec(
+                f"DISPLAY={self.display} xdotool mousemove {point['x']} {point['y']}"
+            )
         self._exec(f"DISPLAY={self.display} xdotool mouseup 1")
+
+    def get_current_url(self):
+        return None

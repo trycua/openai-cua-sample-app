@@ -1,7 +1,7 @@
 import os
 from typing import Tuple, Dict, List, Union, Optional
 from playwright.sync_api import Browser, Page, BrowserContext, Error as PlaywrightError
-from .base_playwright import BasePlaywrightComputer
+from ..shared.base_playwright import BasePlaywrightComputer
 from browserbase import Browserbase
 from dotenv import load_dotenv
 import base64
@@ -17,6 +17,9 @@ class BrowserbaseBrowser(BasePlaywrightComputer):
     IMPORTANT: This Browserbase computer requires the use of the `goto` tool defined in playwright_with_custom_functions.py.
     Make sure to include this tool in your configuration when using the Browserbase computer.
     """
+
+    def get_dimensions(self):
+        return self.dimensions
 
     def __init__(
         self,
@@ -75,8 +78,7 @@ class BrowserbaseBrowser(BasePlaywrightComputer):
 
         # Connect to the remote session
         browser = self._playwright.chromium.connect_over_cdp(
-            self.session.connect_url,
-            timeout=60000
+            self.session.connect_url, timeout=60000
         )
         context = browser.contexts[0]
 
@@ -85,7 +87,8 @@ class BrowserbaseBrowser(BasePlaywrightComputer):
 
         # Only add the init script if virtual_mouse is True
         if self.virtual_mouse:
-            context.add_init_script("""
+            context.add_init_script(
+                """
             // Only run in the top frame
             if (window.self === window.top) {
                 function initCursor() {
@@ -126,7 +129,8 @@ class BrowserbaseBrowser(BasePlaywrightComputer):
                     }
                 });
             }
-            """)
+            """
+            )
 
         page = context.pages[0]
         page.on("close", self._handle_page_close)
@@ -184,12 +188,13 @@ class BrowserbaseBrowser(BasePlaywrightComputer):
             cdp_session = self._page.context.new_cdp_session(self._page)
 
             # Capture screenshot using CDP
-            result = cdp_session.send("Page.captureScreenshot", {
-                "format": "png",
-                "fromSurface": True
-            })
+            result = cdp_session.send(
+                "Page.captureScreenshot", {"format": "png", "fromSurface": True}
+            )
 
-            return result['data']
+            return result["data"]
         except PlaywrightError as error:
-            print(f"CDP screenshot failed, falling back to standard screenshot: {error}")
+            print(
+                f"CDP screenshot failed, falling back to standard screenshot: {error}"
+            )
             return super().screenshot()

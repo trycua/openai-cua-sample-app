@@ -33,12 +33,13 @@ class Agent:
         self.acknowledge_safety_check_callback = acknowledge_safety_check_callback
 
         if computer:
+            dimensions = computer.get_dimensions()
             self.tools += [
                 {
                     "type": "computer-preview",
-                    "display_width": computer.dimensions[0],
-                    "display_height": computer.dimensions[1],
-                    "environment": computer.environment,
+                    "display_width": dimensions[0],
+                    "display_height": dimensions[1],
+                    "environment": computer.get_environment(),
                 },
             ]
 
@@ -102,7 +103,7 @@ class Agent:
             }
 
             # additional URL safety checks for browser environments
-            if self.computer.environment == "browser":
+            if self.computer.get_environment() == "browser":
                 current_url = self.computer.get_current_url()
                 check_blocklisted_url(current_url)
                 call_output["output"]["current_url"] = current_url

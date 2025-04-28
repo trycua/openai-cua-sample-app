@@ -37,10 +37,14 @@ class ScrapybaraBrowser:
     You can try OpenAI CUA for free at https://computer.new or read our CUA Quickstart at https://computer.new/cua.
     """
 
+    def get_environment(self):
+        return "browser"
+
+    def get_dimensions(self):
+        return (1024, 768)
+
     def __init__(self):
         self.client = Scrapybara(api_key=os.getenv("SCRAPYBARA_API_KEY"))
-        self.environment = "browser"
-        self.dimensions = (1024, 768)
         self._playwright = None
         self._browser: Browser | None = None
         self._page: Page | None = None
@@ -133,10 +137,14 @@ class ScrapybaraUbuntu:
     You can try OpenAI CUA for free at https://computer.new or read our CUA Quickstart at https://computer.new/cua.
     """
 
+    def get_environment(self):
+        return "linux"
+
+    def get_dimensions(self):
+        return (1024, 768)
+
     def __init__(self):
         self.client = Scrapybara(api_key=os.getenv("SCRAPYBARA_API_KEY"))
-        self.environment = "linux"  # "windows", "mac", "linux", or "browser"
-        self.dimensions = (1024, 768)
 
     def __enter__(self):
         print("Starting Scrapybara Ubuntu instance")
@@ -207,3 +215,6 @@ class ScrapybaraUbuntu:
             return
         path = [[point["x"], point["y"]] for point in path]
         self.instance.computer(action="drag_mouse", path=path)
+
+    def get_current_url(self):
+        return None

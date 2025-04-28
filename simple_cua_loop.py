@@ -43,7 +43,7 @@ def handle_item(item, computer: Computer):
         }
 
         # additional URL safety checks for browser environments
-        if computer.environment == "browser":
+        if computer.get_environment() == "browser":
             current_url = computer.get_current_url()
             call_output["output"]["current_url"] = current_url
             check_blocklisted_url(current_url)
@@ -56,12 +56,13 @@ def handle_item(item, computer: Computer):
 def main():
     """Run the CUA (Computer Use Assistant) loop, using Local Playwright."""
     with LocalPlaywrightComputer() as computer:
+        dimensions = computer.get_dimensions()
         tools = [
             {
                 "type": "computer-preview",
-                "display_width": computer.dimensions[0],
-                "display_height": computer.dimensions[1],
-                "environment": computer.environment,
+                "display_width": dimensions[0],
+                "display_height": dimensions[1],
+                "environment": computer.get_environment(),
             }
         ]
 

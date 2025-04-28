@@ -1,9 +1,9 @@
 from agent.agent import Agent
-from computers import LocalPlaywrightComputer
+from computers import LocalPlaywrightBrowser
 
 
 def main(user_input=None):
-    with LocalPlaywrightComputer() as computer:
+    with LocalPlaywrightBrowser() as computer:
         agent = Agent(computer=computer)
         items = []
         while True:

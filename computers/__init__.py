@@ -1,6 +1,11 @@
+from . import default
+from . import contrib
 from .computer import Computer
-from .browserbase import BrowserbaseBrowser
-from .local_playwright import LocalPlaywrightComputer
-from .docker import DockerComputer
-from .scrapybara import ScrapybaraBrowser, ScrapybaraUbuntu
-from .cua import CuaMacOSComputer
+from .config import computers_config
+
+__all__ = [
+    "default",
+    "contrib",
+    "Computer",
+    "computers_config",
+]
