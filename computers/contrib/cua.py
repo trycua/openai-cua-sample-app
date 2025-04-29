@@ -43,7 +43,7 @@ class CuaComputerAdapter:
     def scroll(self, x: int, y: int, scroll_x: int, scroll_y: int):
         """Scroll at the specified coordinates."""
         self._run_async(self.computer.interface.move_cursor(x, y))
-        self._run_async(self.computer.interface.scroll(scroll_y))
+        self._run_async(self.computer.interface.scroll(scroll_y // 50))
         
     def type(self, text: str):
         """Type the specified text."""
@@ -59,14 +59,17 @@ class CuaComputerAdapter:
         
     def keypress(self, keys: List[str]):
         """Press the specified keys."""
-        for key in keys:
-            # Map common key names to CUA equivalents
-            if key.lower() == "enter":
-                self._run_async(self.computer.interface.press_key("return"))
-            elif key.lower() == "space":
-                self._run_async(self.computer.interface.press_key("space"))
-            else:
-                self._run_async(self.computer.interface.press_key(key))
+        if len(keys) > 1:
+            self._run_async(self.computer.interface.hotkey(*keys))
+        else:
+            for key in keys:
+                # Map common key names to CUA equivalents
+                if key.lower() == "enter":
+                    self._run_async(self.computer.interface.press_key("return"))
+                elif key.lower() == "space":
+                    self._run_async(self.computer.interface.press_key("space"))
+                else:
+                    self._run_async(self.computer.interface.press_key(key))
                 
     def drag(self, path: List[Dict[str, int]]):
         """Drag from the start point to the end point."""
